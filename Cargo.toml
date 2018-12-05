@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "budget-lib",
+    "budget-bin"
+]
