@@ -1,5 +1,5 @@
 [package]
-name = "budget-bin"
+name = "budgie"
 version = "0.1.0"
 authors = ["dan <danieleades@hotmail.com>"]
 edition = "2018"

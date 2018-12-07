@@ -11,7 +11,7 @@ fn main() {
     std::fs::DirBuilder::new()
         .recursive(true)
         .create(&budget_root)
-        .expect(&format!("unable to create budget directory: {:?}", &budget_root));
+        .unwrap_or_else(|_| panic!("unable to create budget directory: {:?}", &budget_root));
     
     // set up logging for the app
     logging::setup_logging(&budget_root.join("log"));

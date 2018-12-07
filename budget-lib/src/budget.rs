@@ -64,6 +64,20 @@ impl Budget {
         self.categories.values()
     }
 
+    pub fn add_category<'a, S>(&mut self, name: S) -> Result<&str, &str>
+    where
+        S: Into<Cow<'a, str>>,
+    {
+        let n = name.into();
+        match self.categories.get_id(&n) {
+            Some(id) => Err(&self.categories.get(&id).unwrap().name),
+            None => {
+                let id = self.categories.get_or_create_id(n);
+                Ok(&self.categories.get(&id).unwrap().name)
+            }
+        }
+    }
+
     pub fn ledger(&self) -> &Ledger {
         &self.transactions
     }
@@ -177,19 +191,23 @@ struct MasterCategory {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct Category {
+pub struct Category {
     name: String,
     sort: i32,
     hidden: bool,
 }
 
 impl Category {
-    fn new<S: Into<String>>(name: S) -> Self {
+    pub fn new<S: Into<String>>(name: S) -> Self {
         Category {
             name: name.into(),
             sort: 0,
             hidden: false,
         }
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
     }
 }
 
