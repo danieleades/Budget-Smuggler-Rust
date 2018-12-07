@@ -34,7 +34,7 @@ impl<T: Datelike> From<T> for CalendarMonth {
 
 #[derive(PartialEq, PartialOrd, Eq, Ord, Serialize, Deserialize, Debug, Clone)]
 pub enum Month {
-    Jan=1,
+    Jan = 1,
     Feb,
     Mar,
     Apr,

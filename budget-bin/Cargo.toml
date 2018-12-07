@@ -12,3 +12,4 @@ chrono = { version = "0.4.6", features = ["serde"] }
 dirs = "1.0.4"
 clap = "2.32.0"
 serde_yaml = "0.8.8"
+decimal = "2.0.4"

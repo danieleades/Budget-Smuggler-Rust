@@ -10,7 +10,7 @@ use uuid::Uuid;
 
 type CategoryID = Uuid;
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Budget {
     /// a list of the transactions that make up the budget
     transactions: Ledger,
@@ -62,6 +62,10 @@ impl Budget {
     }
     pub fn categories(&self) -> impl Iterator<Item = &Category> {
         self.categories.values()
+    }
+
+    pub fn ledger(&self) -> &Ledger {
+        &self.transactions
     }
 
     pub fn add(&mut self, t: Transaction) {
@@ -118,14 +122,16 @@ impl Budget {
             x.name = new.to_string();
         }
 
-        (&mut self.transactions)
+        if let Some(t) = (&mut self.transactions)
             .into_iter()
             .find(|t| t.category() == &Some(old.to_string()))
-            .map(|t| t.set_category(Some(new)));
+        {
+            t.set_category(Some(new))
+        };
     }
 }
 
-#[derive(Default, Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize, Debug)]
 struct Categories {
     #[serde(flatten)]
     categories: HashMap<CategoryID, Category>,
@@ -164,13 +170,13 @@ impl Categories {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct MasterCategory {
     name: String,
     sort: i32,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Category {
     name: String,
     sort: i32,
@@ -187,12 +193,12 @@ impl Category {
     }
 }
 
-#[derive(Default, Serialize, Deserialize)]
+#[derive(Default, Debug, Serialize, Deserialize)]
 struct Allocation {
     amount: d128,
 }
 
-#[derive(Default, Serialize, Deserialize)]
+#[derive(Default, Debug, Serialize, Deserialize)]
 struct Summary {
     n: u32,
     sum: d128,

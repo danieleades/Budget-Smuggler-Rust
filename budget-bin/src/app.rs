@@ -1,5 +1,5 @@
 use budget_lib::Budget;
-use clap::{App, AppSettings, ArgMatches};
+use clap::{crate_authors, crate_version, App, AppSettings, ArgMatches};
 mod transaction;
 
 pub fn run(budget: &mut Budget) {
@@ -9,7 +9,9 @@ pub fn run(budget: &mut Budget) {
 }
 
 fn get_app<'a, 'b>() -> App<'a, 'b> {
-    App::with_defaults("Budget")
+    App::new("Budget")
+        .author(crate_authors!("\n"))
+        .version(crate_version!())
         // app settings
         .setting(AppSettings::AllowNegativeNumbers)
         .setting(AppSettings::DeriveDisplayOrder)

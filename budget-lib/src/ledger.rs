@@ -1,12 +1,12 @@
+use crate::serialise::{deserialise_from_file, serialise_to_file, SerialiseError};
 use crate::Transaction;
-use crate::serialise::{serialise_to_file, deserialise_from_file, SerialiseError};
+use serde_derive::{Deserialize, Serialize};
 use std::path::Path;
-use serde_derive::{Serialize, Deserialize};
 
 // this is an intentially simplistic collection type. Once I've been using this for a while, and know what i actually need it to be able to do, then I
 // can start optimising it and getting clever about it.
 
-#[derive(Default, Serialize, Deserialize)]
+#[derive(Default, Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Ledger {
     transactions: Vec<Transaction>,
@@ -27,7 +27,6 @@ impl Ledger {
     {
         let mut ledger = Ledger {
             transactions: transactions.into_iter().collect(),
-            ..Self::default()
         };
         ledger.sort_by_date();
         ledger

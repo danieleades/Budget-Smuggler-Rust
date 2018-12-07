@@ -150,7 +150,7 @@ impl Transaction {
         &self.account
     }
 
-        pub fn set_account<S: Into<String>>(&self) -> &Option<String> {
+    pub fn set_account<S: Into<String>>(&self) -> &Option<String> {
         &self.account
     }
 
