@@ -15,7 +15,36 @@ fn get_app<'a, 'b>() -> App<'a, 'b> {
     App::new("Budget-Smuggler")
         .author(crate_authors!("\n"))
         .version(crate_version!())
-        .about("Personal finance and budgeting app.")
+        .about(r#"
+        Budget-Smuggler
+
+            .'*'*'.  .'```'.
+           (..)O))) (..)O)))
+           (\/  ))))(\/  ))))
+            \ ## ))) \ oo )))\
+            |`''`%%/%|`''`""/"\
+            |%%%%%/%%|"""""/"""\
+            |%%%%%|%%|"""""|""""' 
+            `%%%%%%\%`""""""\""""\
+             \%%%%%%\%\""""""\\""".
+              |%%%%%%\%|""""""\\\\|
+ ____________;;%_%;;%_;;"_";;"_\\\|____________
+ ____________\'___'\__\'___'\__________________
+                  \%%%%\\| \""""\\|
+                   `%%%%\\  `""""\\
+                     `%%\\    `""\\
+                       \#\\     \%\\
+                        \#\\     \%\\
+                         \#\\     \%\\
+                          \#\\     \%\\
+                           \#\\     \%\\
+                            \#\      \%\
+                             \#\      \%\
+                              \#\      \%\
+                               \#\      \%\
+                                \\       \\
+                                
+        Personal finance and budgeting app."#)
         // app settings
         .setting(AppSettings::AllowNegativeNumbers)
         .setting(AppSettings::DeriveDisplayOrder)
