@@ -1,6 +1,8 @@
 language: rust
 before_script:
-  - rustup component add rustfmt
+  - rustup component add --toolchain stable rustfmt
+  - rustup component add --toolchain beta rustfmt
+  - rustup component add --toolchain nightly rustfmt-preview
 cache: cargo
 script:
   - cargo test --verbose --all
