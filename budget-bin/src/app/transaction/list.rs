@@ -13,5 +13,5 @@ pub fn delegate(budget: &mut Budget, matches: &ArgMatches) {
 }
 
 pub fn process(budget: &mut Budget, matches: &ArgMatches) {
-        println!("{:?}", budget.ledger())
+        println!("{:?}", budget.ledger());
 }
