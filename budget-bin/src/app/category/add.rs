@@ -1,7 +1,5 @@
-use budget_lib::{Budget, Transaction};
+use budget_lib::Budget;
 use clap::{App, Arg, ArgMatches, SubCommand};
-use decimal::d128;
-use std::str::FromStr;
 
 pub fn command<'a, 'b>() -> App<'a, 'b> {
     SubCommand::with_name("add")

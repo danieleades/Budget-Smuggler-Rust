@@ -1,7 +1,9 @@
 use budget_lib::Budget;
-use clap::{crate_authors, crate_version, App, AppSettings, ArgMatches};
+use clap::{crate_authors, crate_version, App, AppSettings, ArgMatches, value_t};
 mod category;
 mod transaction;
+mod transfer;
+use std::str::FromStr;
 
 pub fn run(budget: &mut Budget) {
     let app = get_app();
@@ -32,5 +34,29 @@ fn delegate(budget: &mut Budget, matches: &ArgMatches) {
         //assume 'transaction'
         (_, None) => transaction::delegate(budget, matches),
         _ => panic!("app::delegate not implemented correctly!"),
+    }
+}
+
+// this trait is a wrapper around clap's 'value_t' macro
+pub trait AppTools {
+    type Err;
+    /// returns a converted value. the type must implement 'FromStr'. the optional format string is added to the user message to explain the correct format for this type.
+    fn typed_value_of<T: FromStr>(&self, name: &str, format: Option<&str>) -> Option<T>;
+}
+
+impl<'a> AppTools for ArgMatches<'a> {
+    type Err = clap::Error;
+
+    fn typed_value_of<T: FromStr>(&self, name: &str, format: Option<&str>) -> Option<T> {
+        match value_t!(self.value_of(name), T) {
+            Ok(x) => Some(x),
+            Err(ref x) if x.kind == clap::ErrorKind::ArgumentNotFound => None,
+            Err(mut x) => {
+                if let Some(f) = format {
+                    x.message += &format!(" [{}]", f);
+                }
+                x.exit()
+            }
+        }
     }
 }
