@@ -1,13 +1,21 @@
 language: rust
-before_script:
-  - rustup component add rustfmt-preview
+
 cache: cargo
-script:
-  - cargo test --verbose --all
-  - cargo fmt --all -- --check
+
 rust:
   - stable
   - beta
   - nightly
+
 matrix:
-  fast_finish: true
+  allow_failures:
+    - rust: nightly
+
+install:
+  - (cargo install rustfmt || true)
+  - PATH=$PATH:/home/travis/.cargo/bin
+
+script:
+  - cargo fmt -- --write-mode=diff
+  - cargo build --verbose
+  - cargo test --verbose
