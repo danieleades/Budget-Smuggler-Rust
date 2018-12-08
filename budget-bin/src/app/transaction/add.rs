@@ -21,16 +21,18 @@ pub fn delegate(budget: &mut Budget, matches: &ArgMatches) {
 
 pub fn process(budget: &mut Budget, matches: &ArgMatches) {
         let amount = d128::from_str(matches.value_of("amount").unwrap()).unwrap();
-        let description = matches.values_of("description").map(|mut tokens| {
-                let mut sentence = "".to_string();
-                if let Some(x) = tokens.next() {
-                        sentence.push_str(x);
-                }
-                for token in tokens {
-                        sentence += &format!(" {}", token)
-                }
-                sentence
-        });
+        let description = matches.values_of("description").map(collect_sentence);
 
         budget.add(Transaction::new(amount).with_description(description))
+}
+
+fn collect_sentence<'a>(mut tokens: impl Iterator<Item = &'a str>) -> String {
+        let mut sentence = "".to_string();
+        if let Some(x) = tokens.next() {
+                sentence.push_str(&x);
+        }
+        for token in tokens {
+                sentence += &format!(" {}", token)
+        }
+        sentence
 }
