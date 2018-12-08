@@ -1,5 +1,5 @@
 use budget_lib::Budget;
-use clap::{crate_authors, crate_version, App, AppSettings, ArgMatches, value_t};
+use clap::{crate_authors, crate_version, value_t, App, AppSettings, ArgMatches};
 mod category;
 mod transaction;
 mod transfer;
@@ -15,8 +15,14 @@ fn get_app<'a, 'b>() -> App<'a, 'b> {
     App::new("Budget-Smuggler")
         .author(crate_authors!("\n"))
         .version(crate_version!())
-        .about(r#"
-        Budget-Smuggler
+        .about(
+            r#"
+ ___         _          _       ___                     _         
+| _ )_  _ __| |__ _ ___| |_ ___/ __|_ __ _  _ __ _ __ _| |___ _ _ 
+| _ \ || / _` / _` / -_)  _|___\__ \ '  \ || / _` / _` | / -_) '_|
+|___/\_,_\__,_\__, \___|\__|   |___/_|_|_\_,_\__, \__, |_\___|_|  
+              |___/                          |___/|___/           
+
 
             .'*'*'.  .'```'.
            (..)O))) (..)O)))
@@ -44,7 +50,8 @@ fn get_app<'a, 'b>() -> App<'a, 'b> {
                                \#\      \%\
                                 \\       \\
                                 
-        Personal finance and budgeting app."#)
+        Personal finance and budgeting app."#,
+        )
         // app settings
         .setting(AppSettings::AllowNegativeNumbers)
         .setting(AppSettings::DeriveDisplayOrder)
