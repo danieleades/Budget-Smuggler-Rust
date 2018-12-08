@@ -2,18 +2,18 @@ use budget_lib::Budget;
 use clap::{App, ArgMatches, SubCommand};
 
 pub fn command<'a, 'b>() -> App<'a, 'b> {
-        SubCommand::with_name("list")
-        // app settings
+    SubCommand::with_name("list")
+    // app settings
 
-        // subcommands
+    // subcommands
 }
 
 pub fn delegate(budget: &mut Budget, matches: &ArgMatches) {
-        process(budget, matches)
+    process(budget, matches)
 }
 
 pub fn process(budget: &mut Budget, matches: &ArgMatches) {
-        for category in budget.categories() {
-                println!("{}", category.name());
-        }
+    for category in budget.categories() {
+        println!("{}", category.name());
+    }
 }

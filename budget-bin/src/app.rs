@@ -1,7 +1,7 @@
 use budget_lib::Budget;
 use clap::{crate_authors, crate_version, App, AppSettings, ArgMatches};
-mod transaction;
 mod category;
+mod transaction;
 
 pub fn run(budget: &mut Budget) {
     let app = get_app();

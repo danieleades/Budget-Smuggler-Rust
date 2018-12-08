@@ -1,5 +1,5 @@
 use budget_lib::Budget;
-use clap::{App, ArgMatches, SubCommand, AppSettings};
+use clap::{App, AppSettings, ArgMatches, SubCommand};
 
 mod add;
 mod list;
@@ -10,9 +10,9 @@ pub fn command<'a, 'b>() -> App<'a, 'b> {
         // app settings
         .setting(AppSettings::SubcommandRequiredElseHelp)
         // subcommands
-       .subcommand(add::command())
-       .subcommand(list::command())
-       .subcommand(rename::command())
+        .subcommand(add::command())
+        .subcommand(list::command())
+        .subcommand(rename::command())
 }
 
 pub fn delegate(budget: &mut Budget, matches: &ArgMatches) {

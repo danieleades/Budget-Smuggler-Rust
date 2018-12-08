@@ -7,10 +7,9 @@ mod list;
 pub fn command<'a, 'b>() -> App<'a, 'b> {
     SubCommand::with_name("transaction")
         // app settings
-
         // subcommands
-       .subcommand(add::command())
-       .subcommand(list::command())
+        .subcommand(add::command())
+        .subcommand(list::command())
 }
 
 pub fn delegate(budget: &mut Budget, matches: &ArgMatches) {

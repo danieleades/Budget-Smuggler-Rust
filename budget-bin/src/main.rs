@@ -1,5 +1,5 @@
-mod logging;
 mod app;
+mod logging;
 use budget_lib::Budget;
 
 fn main() {
@@ -12,7 +12,7 @@ fn main() {
         .recursive(true)
         .create(&budget_root)
         .unwrap_or_else(|_| panic!("unable to create budget directory: {:?}", &budget_root));
-    
+
     // set up logging for the app
     logging::setup_logging(&budget_root.join("log"));
 

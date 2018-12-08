@@ -3,9 +3,9 @@ use clap::{App, ArgMatches, SubCommand};
 
 pub fn command<'a, 'b>() -> App<'a, 'b> {
     SubCommand::with_name("list")
-        // app settings
+    // app settings
 
-        // subcommands
+    // subcommands
 }
 
 pub fn delegate(budget: &mut Budget, matches: &ArgMatches) {
@@ -13,5 +13,5 @@ pub fn delegate(budget: &mut Budget, matches: &ArgMatches) {
 }
 
 pub fn process(budget: &mut Budget, matches: &ArgMatches) {
-        println!("{:?}", budget.ledger());
+    println!("{:?}", budget.ledger());
 }

@@ -11,7 +11,8 @@ pub fn setup_logging(log_path: &Path) {
                 record.level(),
                 message
             ))
-        }).level(log::LevelFilter::Debug)
+        })
+        .level(log::LevelFilter::Debug)
         .chain(
             fs::OpenOptions::new()
                 .write(true)
@@ -19,7 +20,8 @@ pub fn setup_logging(log_path: &Path) {
                 .create(true)
                 .open(log_path)
                 .unwrap(),
-        ).apply()
+        )
+        .apply()
         .unwrap();
 
     log::info!("starting logging, log file: {:?}", log_path);
