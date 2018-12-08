@@ -12,8 +12,7 @@ matrix:
     - rust: nightly
 
 install:
-  - (cargo install rustfmt || true)
-  - PATH=$PATH:/home/travis/.cargo/bin
+  - rustup component add rustfmt
 
 script:
   - cargo fmt -- --write-mode=diff
