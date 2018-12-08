@@ -2,7 +2,7 @@ use budget_lib::Budget;
 use clap::{App, ArgMatches, SubCommand};
 
 mod add;
-mod list;
+pub mod list;
 
 pub fn command<'a, 'b>() -> App<'a, 'b> {
     SubCommand::with_name("transaction")
