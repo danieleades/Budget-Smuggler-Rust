@@ -1,3 +1,5 @@
+#![warn(clippy::all)]
+
 mod app;
 mod logging;
 use budget_lib::Budget;

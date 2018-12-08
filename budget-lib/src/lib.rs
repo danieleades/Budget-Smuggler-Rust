@@ -1,3 +1,5 @@
+#![warn(clippy::all)]
+
 mod transaction;
 pub use crate::transaction::Transaction;
 
