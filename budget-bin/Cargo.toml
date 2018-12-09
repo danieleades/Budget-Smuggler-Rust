@@ -3,6 +3,9 @@ name = "budgie"
 version = "0.1.0"
 authors = ["dan <danieleades@hotmail.com>"]
 edition = "2018"
+repository = "https://github.com/danieleades/Budget-Smuggler"
+keywords = ["finance", "budget", "accounting", "money"]
+license = "GPL-3.0"
 
 [dependencies]
 budget-lib = { path = "../budget-lib" }
@@ -13,3 +16,7 @@ dirs = "1.0.4"
 clap = "2.32.0"
 serde_yaml = "0.8.8"
 decimal = "2.0.4"
+
+[badges]
+travis-ci = { repository = "danieleades/Budget-Smuggler" }
+maintenance = { status = "actively-developed" }
