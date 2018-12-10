@@ -59,6 +59,7 @@ fn get_app<'a, 'b>() -> App<'a, 'b> {
         // subcommands
         .subcommand(transaction::command())
         .subcommand(category::command())
+        .subcommand(transfer::command())
         .subcommand(transaction::list::command().setting(AppSettings::Hidden))
 }
 
@@ -67,6 +68,7 @@ fn delegate(budget: &mut Budget, matches: &ArgMatches) {
         ("transaction", Some(submatches)) => transaction::delegate(budget, submatches),
         ("category", Some(submatches)) => category::delegate(budget, submatches),
         ("list", Some(submatches)) => transaction::list::delegate(budget, submatches),
+        ("transfer", Some(submatches)) => transfer::delegate(budget, submatches),
         //assume 'transaction'
         (_, None) => transaction::delegate(budget, matches),
         _ => panic!("app::delegate not implemented correctly!"),

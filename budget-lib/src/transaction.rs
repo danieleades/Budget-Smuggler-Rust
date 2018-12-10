@@ -1,14 +1,16 @@
+use crate::Currency;
 use chrono::{DateTime, Utc};
 use decimal::d128;
 use serde_derive::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Transaction<T=d128> 
-where T: Default
+pub struct Transaction<C = d128>
+where
+    C: Currency,
 {
     /// transaction value. a positive number represents flow into the account
-    amount: T,
+    amount: C,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     description: Option<String>,
@@ -48,12 +50,13 @@ where T: Default
     source: Source,
 }
 
-impl<T> Default for Transaction<T> 
-where T: Default
+impl<C> Default for Transaction<C>
+where
+    C: Currency,
 {
     fn default() -> Self {
         Transaction {
-            amount: T::default(),
+            amount: C::default(),
             description: None,
             payee: None,
             date_created: Utc::now(),
@@ -69,23 +72,26 @@ where T: Default
     }
 }
 
-impl Transaction {
-    pub fn new<T: Into<d128>>(amount: T) -> Transaction {
-        Transaction {
+impl<C> Transaction<C>
+where
+    C: Currency,
+{
+    pub fn new<T: Into<C>>(amount: T) -> Self {
+        Self {
             amount: amount.into(),
             ..Self::default()
         }
     }
 
-    pub fn amount(&self) -> d128 {
-        self.amount
+    pub fn amount(&self) -> &C {
+        &self.amount
     }
 
-    pub fn set_amount<T: Into<d128>>(&mut self, amount: T) {
+    pub fn set_amount<T: Into<C>>(&mut self, amount: T) {
         self.amount = amount.into();
     }
 
-    pub fn with_amount<T: Into<d128>>(mut self, amount: T) -> Self {
+    pub fn with_amount<T: Into<C>>(mut self, amount: T) -> Self {
         self.set_amount(amount.into());
         self
     }
@@ -233,7 +239,7 @@ impl Transaction {
 
     /// returns true if two transactions have the same amount, description, category, tags, transaction date.
     /// ids, added date, source, and reconciled state are not considered.
-    pub fn is_similar(&self, other: &Transaction) -> bool {
+    pub fn is_similar(&self, other: &Transaction<C>) -> bool {
         self.amount() == other.amount()
             && self.description() == other.description()
             && self.category() == other.category()
@@ -248,8 +254,9 @@ pub enum Source {
     Reconciliation,
 }
 
+#[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{d128, Transaction};
 
     #[test]
     fn constructors() {

@@ -1,6 +1,5 @@
 use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
-use serde_yaml;
+use serde::Serialize;
 use std::error::Error;
 use std::fmt;
 use std::fs::File;

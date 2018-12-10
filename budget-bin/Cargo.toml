@@ -16,6 +16,7 @@ dirs = "1.0.4"
 clap = "2.32.0"
 serde_yaml = "0.8.8"
 decimal = "2.0.4"
+serde = "1.0.81"
 
 [badges]
 travis-ci = { repository = "danieleades/Budget-Smuggler" }
