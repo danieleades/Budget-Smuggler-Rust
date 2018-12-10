@@ -4,9 +4,11 @@ use serde_derive::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Transaction {
+pub struct Transaction<T=d128> 
+where T: Default
+{
     /// transaction value. a positive number represents flow into the account
-    amount: d128,
+    amount: T,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     description: Option<String>,
@@ -46,10 +48,12 @@ pub struct Transaction {
     source: Source,
 }
 
-impl Default for Transaction {
+impl<T> Default for Transaction<T> 
+where T: Default
+{
     fn default() -> Self {
         Transaction {
-            amount: d128::default(),
+            amount: T::default(),
             description: None,
             payee: None,
             date_created: Utc::now(),
@@ -244,42 +248,12 @@ pub enum Source {
     Reconciliation,
 }
 
-impl<T> std::ops::Add<T> for Transaction
-where
-    T: Into<d128>,
-{
-    type Output = Self;
-    fn add(mut self, other: T) -> Self {
-        self.amount += other.into();
-        self
-    }
-}
+mod tests {
+    use super::*;
 
-impl<T> std::ops::AddAssign<T> for Transaction
-where
-    T: Into<d128>,
-{
-    fn add_assign(&mut self, other: T) {
-        self.amount += other.into();
-    }
-}
-
-impl<T> std::ops::Sub<T> for Transaction
-where
-    T: Into<d128>,
-{
-    type Output = Self;
-    fn sub(mut self, other: T) -> Self {
-        self.amount -= other.into();
-        self
-    }
-}
-
-impl<T> std::ops::SubAssign<T> for Transaction
-where
-    T: Into<d128>,
-{
-    fn sub_assign(&mut self, other: T) {
-        self.amount -= other.into();
+    #[test]
+    fn constructors() {
+        Transaction::<d128>::default();
+        Transaction::<f64>::default();
     }
 }
