@@ -1,12 +1,16 @@
+use crate::Currency;
 use chrono::{DateTime, Utc};
 use decimal::d128;
 use serde_derive::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Transaction {
+pub struct Transaction<C = d128>
+where
+    C: Currency,
+{
     /// transaction value. a positive number represents flow into the account
-    amount: d128,
+    amount: C,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     description: Option<String>,
@@ -46,10 +50,13 @@ pub struct Transaction {
     source: Source,
 }
 
-impl Default for Transaction {
+impl<C> Default for Transaction<C>
+where
+    C: Currency,
+{
     fn default() -> Self {
         Transaction {
-            amount: d128::default(),
+            amount: C::default(),
             description: None,
             payee: None,
             date_created: Utc::now(),
@@ -65,23 +72,26 @@ impl Default for Transaction {
     }
 }
 
-impl Transaction {
-    pub fn new<T: Into<d128>>(amount: T) -> Transaction {
-        Transaction {
+impl<C> Transaction<C>
+where
+    C: Currency,
+{
+    pub fn new<T: Into<C>>(amount: T) -> Self {
+        Self {
             amount: amount.into(),
             ..Self::default()
         }
     }
 
-    pub fn amount(&self) -> d128 {
-        self.amount
+    pub fn amount(&self) -> &C {
+        &self.amount
     }
 
-    pub fn set_amount<T: Into<d128>>(&mut self, amount: T) {
+    pub fn set_amount<T: Into<C>>(&mut self, amount: T) {
         self.amount = amount.into();
     }
 
-    pub fn with_amount<T: Into<d128>>(mut self, amount: T) -> Self {
+    pub fn with_amount<T: Into<C>>(mut self, amount: T) -> Self {
         self.set_amount(amount.into());
         self
     }
@@ -229,7 +239,7 @@ impl Transaction {
 
     /// returns true if two transactions have the same amount, description, category, tags, transaction date.
     /// ids, added date, source, and reconciled state are not considered.
-    pub fn is_similar(&self, other: &Transaction) -> bool {
+    pub fn is_similar(&self, other: &Transaction<C>) -> bool {
         self.amount() == other.amount()
             && self.description() == other.description()
             && self.category() == other.category()
@@ -244,42 +254,13 @@ pub enum Source {
     Reconciliation,
 }
 
-impl<T> std::ops::Add<T> for Transaction
-where
-    T: Into<d128>,
-{
-    type Output = Self;
-    fn add(mut self, other: T) -> Self {
-        self.amount += other.into();
-        self
-    }
-}
+#[cfg(test)]
+mod tests {
+    use super::{d128, Transaction};
 
-impl<T> std::ops::AddAssign<T> for Transaction
-where
-    T: Into<d128>,
-{
-    fn add_assign(&mut self, other: T) {
-        self.amount += other.into();
-    }
-}
-
-impl<T> std::ops::Sub<T> for Transaction
-where
-    T: Into<d128>,
-{
-    type Output = Self;
-    fn sub(mut self, other: T) -> Self {
-        self.amount -= other.into();
-        self
-    }
-}
-
-impl<T> std::ops::SubAssign<T> for Transaction
-where
-    T: Into<d128>,
-{
-    fn sub_assign(&mut self, other: T) {
-        self.amount -= other.into();
+    #[test]
+    fn constructors() {
+        Transaction::<d128>::default();
+        Transaction::<f64>::default();
     }
 }

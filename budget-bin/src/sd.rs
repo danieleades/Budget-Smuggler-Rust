@@ -1,6 +1,5 @@
 use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
-use serde_yaml;
+use serde::Serialize;
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
@@ -24,10 +23,7 @@ impl fmt::Display for SerialiseError {
 
 impl Error for SerialiseError {}
 
-pub fn serialise_to_file<T: Serialize, P: AsRef<Path>>(
-    t: &T,
-    path: P,
-) -> Result<(), SerialiseError> {
+pub fn to_file<T: Serialize, P: AsRef<Path>>(t: &T, path: P) -> Result<(), SerialiseError> {
     match File::create(path) {
         Err(x) => Err(SerialiseError::Io(x)),
         Ok(file) => match serde_yaml::to_writer(file, t) {
@@ -37,9 +33,7 @@ pub fn serialise_to_file<T: Serialize, P: AsRef<Path>>(
     }
 }
 
-pub fn deserialise_from_file<T: DeserializeOwned, P: AsRef<Path>>(
-    path: P,
-) -> Result<T, SerialiseError> {
+pub fn from_file<T: DeserializeOwned, P: AsRef<Path>>(path: P) -> Result<T, SerialiseError> {
     match File::open(path) {
         Err(x) => Err(SerialiseError::Io(x)),
         Ok(file) => match serde_yaml::from_reader(file) {

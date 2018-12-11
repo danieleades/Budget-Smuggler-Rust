@@ -1,62 +1,38 @@
-use crate::serialise::{deserialise_from_file, serialise_to_file, SerialiseError};
-use crate::{types::CalendarMonth, Ledger, Transaction};
+use crate::Currency;
+use crate::{CalendarMonth, Ledger, Transaction};
 use chrono::Datelike;
 use decimal::d128;
 use serde_derive::{Deserialize, Serialize};
 use std::borrow::Cow;
 use std::collections::{BTreeMap, HashMap};
-use std::path::Path;
 use uuid::Uuid;
 
 type CategoryID = Uuid;
 
-#[derive(Default, Debug)]
-pub struct Budget {
+#[derive(Default, Debug, Serialize, Deserialize)]
+pub struct Budget<C = d128>
+where
+    C: Currency,
+{
     /// a list of the transactions that make up the budget
-    transactions: Ledger,
+    transactions: Ledger<C>,
 
     master_categories: HashMap<CategoryID, MasterCategory>,
 
     categories: Categories,
 
     /// The allocations are the amounts budgeted for each category for a given month
-    allocations: BTreeMap<(CalendarMonth, CategoryID), Allocation>,
+    allocations: BTreeMap<(CalendarMonth, CategoryID), Allocation<C>>,
 
     /// A map of transactions summaries. The key is a tuple of Calendar Month, and a category ID.
-    summaries: BTreeMap<(CalendarMonth, CategoryID), Summary>,
-    uncategorised_summaries: BTreeMap<CalendarMonth, Summary>,
+    summaries: BTreeMap<(CalendarMonth, CategoryID), Summary<C>>,
+    uncategorised_summaries: BTreeMap<CalendarMonth, Summary<C>>,
 }
 
-impl Budget {
-    pub fn from_directory<P: AsRef<Path>>(path: P) -> Result<Self, SerialiseError> {
-        let transactions = deserialise_from_file(path.as_ref().join("ledger"))?;
-        let (master_categories, categories, allocations, summaries, uncategorised_summaries) =
-            deserialise_from_file(path.as_ref().join("budget"))?;
-        Ok(Budget {
-            transactions,
-            master_categories,
-            categories,
-            allocations,
-            summaries,
-            uncategorised_summaries,
-        })
-    }
-
-    pub fn save_to_directory<P: AsRef<Path>>(&self, path: P) -> Result<(), SerialiseError> {
-        serialise_to_file(&self.transactions, path.as_ref().join("ledger"))?;
-        serialise_to_file(
-            &(
-                &self.master_categories,
-                &self.categories,
-                &self.allocations,
-                &self.summaries,
-                &self.uncategorised_summaries,
-            ),
-            path.as_ref().join("budget"),
-        )?;
-        Ok(())
-    }
-
+impl<C> Budget<C>
+where
+    C: Currency,
+{
     pub fn master_categories(&self) -> impl Iterator<Item = &MasterCategory> {
         self.master_categories.values()
     }
@@ -78,11 +54,11 @@ impl Budget {
         }
     }
 
-    pub fn ledger(&self) -> &Ledger {
+    pub fn ledger(&self) -> &Ledger<C> {
         &self.transactions
     }
 
-    pub fn add(&mut self, t: Transaction) {
+    pub fn add(&mut self, t: Transaction<C>) {
         let date: CalendarMonth = t.date().into();
 
         if let Some(name) = t.category() {
@@ -100,7 +76,7 @@ impl Budget {
 
     pub fn transfer<'a, S>(
         &mut self,
-        amount: impl Into<d128>,
+        amount: impl Into<C>,
         from_category: S,
         to_category: S,
         date: impl Datelike,
@@ -212,27 +188,37 @@ impl Category {
 }
 
 #[derive(Default, Debug, Serialize, Deserialize)]
-struct Allocation {
-    amount: d128,
+struct Allocation<C>
+where
+    C: Currency,
+{
+    amount: C,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize)]
-struct Summary {
+struct Summary<C>
+where
+    C: Currency,
+{
     n: u32,
-    sum: d128,
-    sum_squared: d128,
+    sum: C,
 }
 
-impl Summary {
-    fn add(&mut self, t: &Transaction) {
+impl<C> Summary<C>
+where
+    C: Currency,
+{
+    fn add(&mut self, t: &Transaction<C>) {
         self.n += 1;
-        self.sum += t.amount();
-        self.sum_squared += t.amount() * t.amount();
+        self.sum += *t.amount();
     }
 }
 
-impl From<Ledger> for Budget {
-    fn from(ledger: Ledger) -> Budget {
+impl<C> From<Ledger<C>> for Budget<C>
+where
+    C: Currency,
+{
+    fn from(ledger: Ledger<C>) -> Budget<C> {
         let mut budget = Budget::default();
 
         for transaction in ledger {
@@ -243,8 +229,11 @@ impl From<Ledger> for Budget {
     }
 }
 
-impl From<Budget> for Ledger {
-    fn from(budget: Budget) -> Ledger {
+impl<C> From<Budget<C>> for Ledger<C>
+where
+    C: Currency,
+{
+    fn from(budget: Budget<C>) -> Ledger<C> {
         budget.transactions
     }
 }
