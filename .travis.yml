@@ -7,8 +7,12 @@ rust:
   - beta
   - nightly
 
+matrix:
+  allow_failures:
+    - rust: nightly
+
 install:
-  - rustup component add rustfmt || rustup component add rustmt-nightly
+  - rustup component add rustfmt || rustup component add rustmt-nightly || rustup component add rustfmt-preview
 
 script:
   - cargo fmt -- --check
