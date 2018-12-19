@@ -54,15 +54,8 @@ where
         self.transactions.sort_by_key(Transaction::<C>::date)
     }
 
-    pub fn categories(&self) -> Vec<String> {
-        let categories: Vec<String> = self
-            .transactions
-            .iter()
-            .map(|x| x.category())
-            .filter(|x| x.is_some())
-            .map(|x| x.clone().unwrap())
-            .collect();
-        categories
+    pub fn categories(&self) -> impl Iterator<Item = &String> {
+        self.transactions.iter().filter_map(|x| x.category().into())
     }
 
     pub fn add(&mut self, t: Transaction<C>) {
