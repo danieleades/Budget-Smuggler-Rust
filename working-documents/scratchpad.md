@@ -1,5 +1,6 @@
 # Next Steps
 1. make a nice pretty summary table
+2. add some default sensible default categories
 3. flesh out the existing commands a little. For example transaction.add needs a bunch more arguments for adding other transaction details. For starters, it needs arguments to add a category and a transaction date. probably something like-
 
 `arg.(Arg::with_name("category").required(false).short("c").long("category").takes_value(true)`.

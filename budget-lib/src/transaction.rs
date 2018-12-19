@@ -1,11 +1,27 @@
+//! # Transaction.
+
 use crate::Currency;
-use chrono::{DateTime, Utc};
+use chrono::{Date, DateTime, Utc};
 use decimal::d128;
 use serde_derive::{Deserialize, Serialize};
 use uuid::Uuid;
 
+/// A struct which represents a financial transaction.
+/// Most of the fields are optional, and will only be
+/// serialised if present.
+///
+/// Creating a Transaction with its 'new' method will
+/// result in a Transaction<d128>. d128 is a 128 bit
+/// decimal type. This type doesn't suffer the same
+/// rounding and loss of significance errors as
+/// float and integer types, at the cost of the
+/// speed of operations.
+///
+/// For faster operations, Transaction provides the
+/// 'with_currency' method to use another type to
+/// represent the transaction amount
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Transaction<C = d128>
+pub struct Transaction<C>
 where
     C: Currency,
 {
@@ -72,51 +88,152 @@ where
     }
 }
 
-impl<C> Transaction<C>
-where
-    C: Currency,
-{
-    pub fn new<T: Into<C>>(amount: T) -> Self {
+impl Transaction<d128> {
+    /// Create a new Transaction<d128>
+    /// ```
+    /// use decimal::d128;
+    /// use budget_lib::Transaction;
+    ///
+    /// let t = Transaction::new(100);
+    ///
+    /// assert_eq!(t.amount(), &d128::from(100));
+    /// ```
+    pub fn new<T: Into<d128>>(amount: T) -> Self {
         Self {
             amount: amount.into(),
             ..Self::default()
         }
     }
+}
 
+impl<C> Transaction<C>
+where
+    C: Currency,
+{
+    /// Create a new Transaction with a
+    /// custom type to represent the transaction
+    /// amount. Any type can be used provided it
+    /// implements a few basic operations.
+    /// ```
+    /// use budget_lib::Transaction;
+    ///
+    /// let amount: f32 = 100.0;
+    /// let t = Transaction::with_currency(amount);
+    ///
+    /// assert_eq!(t.amount(), &amount);
+    /// ```
+    pub fn with_currency(amount: C) -> Self {
+        Self {
+            amount,
+            ..Self::default()
+        }
+    }
+    /// Return a reference to the amount of the transaction.
     pub fn amount(&self) -> &C {
         &self.amount
     }
 
+    /// Set the amount of the transaction
     pub fn set_amount<T: Into<C>>(&mut self, amount: T) {
         self.amount = amount.into();
     }
 
+    /// Set the amount of the transaction.
+    ///
+    /// This method consumes and returns the Transaction. This
+    /// is useful for builder-style inline construction.
+    ///
+    /// # Example
+    /// ```
+    /// use budget_lib::Transaction;
+    /// use decimal::d128;
+    ///
+    /// let t = Transaction::<d128>::default()
+    ///             .with_amount(100);
+    /// ```
     pub fn with_amount<T: Into<C>>(mut self, amount: T) -> Self {
         self.set_amount(amount.into());
         self
     }
 
+    /// Returns the date and time that the Transaction was created.
+    ///
+    /// Setting the date and time that a transaction took place is
+    /// optional. In the case that this is not set, it is useful to
+    /// know the date that it was created.
     pub fn created(&self) -> DateTime<Utc> {
         self.date_created
     }
 
+    /// Returns the date that the transaction occurred in real life.
+    ///
+    /// Since this so-called 'value date' of the transaction may not
+    /// be set, this method returns an Option<DateTime<Utc>>.
     pub fn date_transaction(&self) -> Option<DateTime<Utc>> {
         self.date_transaction
     }
 
-    pub fn set_date_transaction<T: Into<DateTime<Utc>>>(&mut self, date: Option<T>) {
-        self.date_transaction = date.map(T::into);
+    /// Set the 'value date' of the transaction.
+    ///
+    /// This is the date that the transaction occurred in real life.
+    /// This method accepts any type that can be converted into a
+    /// chrono::DateTime<Utc>, which in practice is generally a
+    /// chrono::DateTime<Utc>.
+    ///
+    /// This method accepts an Option, since the field is optional.
+    /// The field can be cleared by passing in 'None'.
+    ///
+    /// # Example
+    /// ```
+    /// use chrono::{DateTime, Utc};
+    /// use budget_lib::Transaction;
+    ///
+    /// let mut t = Transaction::new(100);
+    /// t.set_date_transaction(Some(Utc::now()));
+    ///
+    /// assert!(t.date_transaction().is_some());
+    ///
+    /// let date_time: Option<DateTime<Utc>> = None;
+    ///
+    /// t.set_date_transaction(date_time);
+    ///
+    /// assert!(t.date_transaction().is_none());
+    /// ```
+    pub fn set_date_transaction(&mut self, date: Option<DateTime<Utc>>) {
+        self.date_transaction = date;
     }
 
-    pub fn with_date_transaction<T: Into<DateTime<Utc>>>(mut self, date: T) -> Self {
-        self.set_date_transaction(Some(date.into()));
+    /// Inline method for setting the date of the transaction (see 'date_transaction(...)').
+    ///
+    /// This method doesn't accept an option, since it is primarily used in
+    /// constructing a new transaction, where the default transaction value
+    /// date is `None`.
+    ///
+    /// # Example
+    /// ```
+    /// use chrono::{DateTime, Utc};
+    /// use budget_lib::Transaction;
+    ///
+    /// let mut t = Transaction::new(100)
+    ///                 .with_date_transaction(Utc::now());
+    /// ```
+    pub fn with_date_transaction(mut self, date: DateTime<Utc>) -> Self {
+        self.set_date_transaction(Some(date));
         self
     }
 
+    /// Returns the datetime of the transaction if set, otherwise this returns the
+    /// datetime that the transaction was created.
+    ///
+    /// This is useful for sorting purposes. The 'value' date of the transaction is
+    /// preferred, but not always present. For most applications its useful to
+    /// assume that the transaction occurred around about the time the record was
+    /// created.
     pub fn date(&self) -> DateTime<Utc> {
         self.date_transaction().unwrap_or_else(|| self.created())
     }
 
+    /// Returns the transaction description, if present.
     pub fn description(&self) -> &Option<String> {
         &self.description
     }

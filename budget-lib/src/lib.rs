@@ -1,4 +1,5 @@
 #![warn(clippy::all)]
+#![warn(missing_docs)]
 
 mod transaction;
 pub use crate::transaction::Transaction;
