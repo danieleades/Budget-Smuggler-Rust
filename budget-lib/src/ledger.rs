@@ -6,6 +6,10 @@ use serde_derive::{Deserialize, Serialize};
 // this is an intentially simplistic collection type. Once I've been using this for a while, and know what i actually need it to be able to do, then I
 // can start optimising it and getting clever about it.
 
+/// A Ledger represents a collection of Transactions.
+///
+/// Ledger offers some useful helper methods for
+/// working with Transactions.
 #[derive(Default, Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Ledger<C = d128>
@@ -19,6 +23,22 @@ impl<C> Ledger<C>
 where
     C: Currency,
 {
+    /// Create a new Ledger from an iterator over Transactions.
+    ///
+    /// # Example
+    /// ```
+    /// use budget_lib::{Transaction, Ledger};
+    ///
+    /// let v = vec![
+    ///     Transaction::new(10),
+    ///     Transaction::new(20),
+    ///     Transaction::new(30),
+    /// ];
+    ///
+    /// let l = Ledger::from_transactions(
+    ///     v.into_iter()
+    /// );
+    /// ```
     pub fn from_transactions<T>(transactions: T) -> Self
     where
         T: IntoIterator<Item = Transaction<C>>,
