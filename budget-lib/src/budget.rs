@@ -121,10 +121,31 @@ where
     }
 }
 
-#[derive(Default, Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Categories {
     #[serde(flatten)]
     categories: HashMap<CategoryID, Category>,
+}
+
+impl Default for Categories {
+    fn default() -> Self {
+        let default_categories = [
+            "rent/mortgage",
+            "groceries",
+            "restaurants",
+            "clothing",
+            "transport",
+            "savings",
+        ];
+
+        let mut categories = HashMap::new();
+
+        for name in default_categories.iter() {
+            categories.insert(CategoryID::new_v4(), Category::new(*name));
+        }
+
+        Categories { categories }
+    }
 }
 
 impl std::ops::Deref for Categories {
