@@ -8,11 +8,7 @@ pub fn command<'a, 'b>() -> App<'a, 'b> {
     // subcommands
 }
 
-pub fn delegate(budget: &mut Budget, matches: &ArgMatches) {
-    process(budget, matches)
-}
-
-pub fn process(budget: &mut Budget, matches: &ArgMatches) {
+pub fn run(budget: &mut Budget, _matches: &ArgMatches) {
     for category in budget.categories() {
         println!("{}", category.name());
     }

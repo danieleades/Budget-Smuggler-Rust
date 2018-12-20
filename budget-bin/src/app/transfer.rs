@@ -27,11 +27,7 @@ pub fn command<'a, 'b>() -> App<'a, 'b> {
         )
 }
 
-pub fn delegate(budget: &mut Budget, matches: &ArgMatches) {
-    process(budget, matches)
-}
-
-pub fn process(budget: &mut Budget, matches: &ArgMatches) {
+pub fn run(budget: &mut Budget, matches: &ArgMatches) {
     let amount: d128 = matches.typed_value_of("amount", None).unwrap();
     match budget.transfer(
         amount,

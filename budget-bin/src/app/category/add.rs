@@ -13,11 +13,7 @@ pub fn command<'a, 'b>() -> App<'a, 'b> {
         )
 }
 
-pub fn delegate(budget: &mut Budget, matches: &ArgMatches) {
-    process(budget, matches)
-}
-
-pub fn process(budget: &mut Budget, matches: &ArgMatches) {
+pub fn run(budget: &mut Budget, matches: &ArgMatches) {
     let category_name = matches.value_of("name").unwrap();
     match budget.add_category(category_name) {
         Ok(n) => log::info!("Category added: {}", n),

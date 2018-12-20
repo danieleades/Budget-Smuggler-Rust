@@ -6,9 +6,13 @@ mod transfer;
 use std::str::FromStr;
 
 pub fn run(budget: &mut Budget) {
-    let app = get_app();
-    let matches = app.get_matches();
-    delegate(budget, &matches);
+    match get_app().get_matches().subcommand() {
+        ("transaction", Some(submatches)) => transaction::run(budget, submatches),
+        ("category", Some(submatches)) => category::run(budget, submatches),
+        ("list", Some(submatches)) => transaction::list::run(budget, submatches),
+        ("transfer", Some(submatches)) => transfer::run(budget, submatches),
+        _ => panic!("app::run is missing something!"),
+    }
 }
 
 fn get_app<'a, 'b>() -> App<'a, 'b> {
@@ -61,18 +65,6 @@ fn get_app<'a, 'b>() -> App<'a, 'b> {
         .subcommand(category::command())
         .subcommand(transfer::command())
         .subcommand(transaction::list::command().setting(AppSettings::Hidden))
-}
-
-fn delegate(budget: &mut Budget, matches: &ArgMatches) {
-    match matches.subcommand() {
-        ("transaction", Some(submatches)) => transaction::delegate(budget, submatches),
-        ("category", Some(submatches)) => category::delegate(budget, submatches),
-        ("list", Some(submatches)) => transaction::list::delegate(budget, submatches),
-        ("transfer", Some(submatches)) => transfer::delegate(budget, submatches),
-        //assume 'transaction'
-        (_, None) => transaction::delegate(budget, matches),
-        _ => panic!("app::delegate not implemented correctly!"),
-    }
 }
 
 // this trait is a wrapper around clap's 'value_t' macro
