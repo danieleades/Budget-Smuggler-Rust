@@ -31,5 +31,5 @@ fn main() {
     app::run(&mut budget);
 
     //budget.save_to_directory(&budget_root).unwrap();
-    sd::to_file(&budget, &budget_root).unwrap();
+    sd::to_file(&budget, &budget_root.join("budget")).unwrap();
 }

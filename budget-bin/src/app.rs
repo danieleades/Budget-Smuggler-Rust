@@ -60,6 +60,7 @@ fn get_app<'a, 'b>() -> App<'a, 'b> {
         .setting(AppSettings::AllowNegativeNumbers)
         .setting(AppSettings::DeriveDisplayOrder)
         .setting(AppSettings::GlobalVersion)
+        .setting(AppSettings::SubcommandRequiredElseHelp)
         // subcommands
         .subcommand(transaction::command())
         .subcommand(category::command())

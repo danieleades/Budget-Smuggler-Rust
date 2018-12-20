@@ -238,15 +238,33 @@ where
         &self.description
     }
 
+    /// Set the transaction description.
+    ///
+    /// If no description is set, this method
+    /// will return None.
     pub fn set_description<S: Into<String>>(&mut self, description: Option<S>) {
         self.description = description.map(S::into);
     }
 
+    /// Inline method for setting the description
+    /// of a Transaction.
+    ///
+    /// # Example
+    /// ```
+    /// use budget_lib::Transaction;
+    ///
+    /// let t = Transaction::new(20).with_description(Some(
+    ///             "today I found $20 it was the best day ever the end")
+    ///         );
+    ///
+    /// assert!(t.description().is_some());
+    /// ```
     pub fn with_description<S: Into<String>>(mut self, description: Option<S>) -> Self {
         self.description = description.map(S::into);
         self
     }
 
+    /// Returns the payee of the transaction, if set.
     pub fn payee(&self) -> &Option<String> {
         &self.payee
     }
