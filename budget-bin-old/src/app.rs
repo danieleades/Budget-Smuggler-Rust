@@ -53,6 +53,8 @@ fn get_app<'a, 'b>() -> App<'a, 'b> {
         .setting(AppSettings::DeriveDisplayOrder)
         .setting(AppSettings::GlobalVersion)
         .setting(AppSettings::SubcommandRequiredElseHelp)
+        // subcommands
+
 }
 
 // this trait is a wrapper around clap's 'value_t' macro

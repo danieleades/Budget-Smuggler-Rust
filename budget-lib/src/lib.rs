@@ -20,4 +20,4 @@ mod category;
 pub use crate::category::Category;
 
 mod budget;
-pub use crate::budget::Budget;
+pub use crate::budget::{Budget, Cache};
