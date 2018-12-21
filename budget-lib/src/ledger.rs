@@ -1,7 +1,10 @@
+use crate::category::Category;
 use crate::Currency;
 use crate::Transaction;
+use chrono::{DateTime, Utc};
 use decimal::d128;
 use serde_derive::{Deserialize, Serialize};
+use std::iter::FromIterator;
 
 // this is an intentially simplistic collection type. Once I've been using this for a while, and know what i actually need it to be able to do, then I
 // can start optimising it and getting clever about it.
@@ -54,13 +57,32 @@ where
         self.transactions.sort_by_key(Transaction::<C>::date)
     }
 
-    pub fn categories(&self) -> impl Iterator<Item = &String> {
-        self.transactions.iter().filter_map(|x| x.category().into())
+    pub fn categories(&self) -> impl Iterator<Item = &Category> {
+        self.transactions.iter().map(Transaction::category)
     }
 
     pub fn add(&mut self, t: Transaction<C>) {
         self.transactions.push(t);
         self.sort_by_date();
+    }
+
+    pub fn transactions_after(&self, d: DateTime<Utc>) -> impl Iterator<Item = &Transaction<C>> {
+        self.transactions.iter().skip_while(move |x| x.date() < d)
+    }
+
+    pub fn transactions_before(&self, d: DateTime<Utc>) -> impl Iterator<Item = &Transaction<C>> {
+        self.transactions.iter().take_while(move |x| x.date() <= d)
+    }
+
+    pub fn transactions_between(
+        &self,
+        a: DateTime<Utc>,
+        b: DateTime<Utc>,
+    ) -> impl Iterator<Item = &Transaction<C>> {
+        self.transactions
+            .iter()
+            .skip_while(move |x| x.date() < a)
+            .take_while(move |x| x.date() <= b)
     }
 }
 
@@ -96,6 +118,15 @@ where
     type IntoIter = std::slice::IterMut<'a, Transaction<C>>;
     fn into_iter(self) -> Self::IntoIter {
         self.transactions.iter_mut()
+    }
+}
+
+impl<C> FromIterator<Transaction<C>> for Ledger<C>
+where
+    C: Currency,
+{
+    fn from_iter<I: IntoIterator<Item = Transaction<C>>>(iter: I) -> Self {
+        Ledger::from_transactions(iter)
     }
 }
 

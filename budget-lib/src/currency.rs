@@ -4,6 +4,7 @@ use std::{cmp, ops};
 pub trait Currency:
     Default + cmp::PartialEq + ops::AddAssign + ops::Mul + ops::SubAssign + Copy
 {
+    const SYMBOL: Option<char> = None;
 }
 
 impl Currency for d128 {}

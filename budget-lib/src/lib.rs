@@ -13,5 +13,11 @@ pub use crate::currency::Currency;
 mod month;
 use crate::month::CalendarMonth;
 
+mod summary;
+pub use crate::summary::{Summary, SummaryData};
+
+mod category;
+pub use crate::category::Category;
+
 mod budget;
 pub use crate::budget::Budget;

@@ -1,9 +1,11 @@
 //! # Transaction.
 
+use crate::category::Category;
 use crate::Currency;
 use chrono::{Date, DateTime, Utc};
 use decimal::d128;
 use serde_derive::{Deserialize, Serialize};
+use std::str::FromStr;
 use uuid::Uuid;
 
 /// A struct which represents a financial transaction.
@@ -42,8 +44,8 @@ where
     date_transaction: Option<DateTime<Utc>>,
 
     /// An optional category for the transaction
-    #[serde(skip_serializing_if = "Option::is_none")]
-    category: Option<String>,
+    #[serde(skip_serializing_if = "Category::is_empty")]
+    category: Category,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     account: Option<String>,
@@ -77,7 +79,7 @@ where
             payee: None,
             date_created: Utc::now(),
             date_transaction: None,
-            category: None,
+            category: Category::default(),
             account: None,
             tags: Vec::<String>::default(),
             id: None,
@@ -278,16 +280,28 @@ where
         self
     }
 
-    pub fn category(&self) -> &Option<String> {
+    pub fn category(&self) -> &Category {
         &self.category
     }
 
-    pub fn set_category<S: Into<String>>(&mut self, category: Option<S>) {
-        self.category = category.map(S::into);
+    pub fn set_category(&mut self, category: Option<Category>) {
+        self.category = match category {
+            Some(c) => c,
+            None => Category::default(),
+        }
     }
 
-    pub fn with_category<S: Into<String>>(mut self, category: S) -> Self {
-        self.category = Some(category.into());
+    pub fn set_category_from_str<S: AsRef<str>>(&mut self, category: S) {
+        self.category = Category::from_str(category.as_ref()).unwrap_or_default();
+    }
+
+    pub fn with_category<S: Into<String>>(mut self, category: Option<Category>) -> Self {
+        self.set_category(category);
+        self
+    }
+
+    pub fn with_category_from_str<S: AsRef<str>>(mut self, category: S) -> Self {
+        self.set_category_from_str(category);
         self
     }
 
